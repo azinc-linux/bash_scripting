@@ -5,7 +5,7 @@ log=/home/access.log
 rep=/tmp/report.txt
 lastrecord=$(cat $rec)
 X=10
-Y=10
+Y=20
 code=1
 get_firstandlastline()
 {
@@ -22,15 +22,15 @@ endtime=`sed -n "$maxline{p;q}" $1 | awk '{print$4}' | sed -e 's/\[//g'`
 grouping_request_ip_address()
 { echo "Report  within range from $starttime and until $endtime" > $rep
   echo "-------------------------------------------------------------------" >> $rep
-  echo "Summary of requests" >> $rep
-echo "`sed -n ""$start","$maxline"p" $1 | grep GET | awk '{print$1}' | sort | uniq -c | sort -nr | awk '{if (NR<='$X') print $1,$2}' | sed -e 's/\(^[0-9]\{1,4\}\)/number of occurances: &/g' | sed  -e 's/\([0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\)/ip address: &/g'`" >> $rep
+  echo "Summary of ip addresses" >> $rep
+echo "`sed -n ""$start","$maxline"p" $1  | awk '{print$1}' | sort | uniq -c | sort -nr | awk '{if(NR<='$X') print $1,$2}' | sed -e 's/\(^[0-9]\{1,4\}\)/number of occurances: &/g' | sed  -e 's/\([0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\)/ip address: &/g'`" >> $rep
 }
 
 grouping_respond_ip_address() 
 {   
   echo "-------------------------------------------------------------------" >> $rep   
-  echo "Summary of responds" >> $rep
-  echo "`sed -n ""$start","$maxline"p" $1 | grep POST | awk '{print$1}' | sort | uniq -c | sort -nr | awk '{if (NR<='$Y') print $1,$2}' | sed -e 's/\(^[0-9]\{1,4\}\)/number of occurances: &/g' | sed  -e 's/\([0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\)/ip address: &/g'`" >> $rep 
+  echo "Summary of requested ip addresses" >> $rep
+  echo "`sed -n ""$start","$maxline"p" $1 | awk -F'"' '{if($2!="") print$1}' | awk '{print$1}' | sort | uniq -c | sort -nr | awk '{if(NR<='$Y') print $1" "$2}' | sed -e 's/\(^[0-9]\{1,4\}\)/number of occurances: &/g' | sed  -e 's/\([0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\)/ip address: &/g'`" >> $rep 
 }
 
 
